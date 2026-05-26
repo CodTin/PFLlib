@@ -1,0 +1,87 @@
+from pathlib import Path
+from typing import Any, Union
+
+import torch.nn as nn
+from pydantic import BaseModel, Field
+
+
+class ExperimentConfig(BaseModel):
+    dataset: str = Field(default="MNIST", description="Dataset name")
+    algorithm: str = Field(default="FedAvg", description="FL algorithm name")
+    model: Union[str, nn.Module] = Field(default="CNN", description="Model architecture")
+    num_classes: int = Field(default=10, description="Number of target classes")
+    num_clients: int = Field(default=20, description="Total number of clients")
+    global_rounds: int = Field(default=2000, description="Number of global communication rounds")
+    local_epochs: int = Field(default=1, description="Local training epochs per round")
+    batch_size: int = Field(default=10, description="Local training batch size")
+    local_learning_rate: float = Field(default=0.005, description="Local learning rate")
+    learning_rate_decay: bool = Field(default=False, description="Whether to decay learning rate")
+    learning_rate_decay_gamma: float = Field(default=0.99, description="LR decay gamma for ExponentialLR")
+    device: str = Field(default="cuda", description="Compute device: cpu or cuda")
+    device_id: str = Field(default="0", description="CUDA device ID")
+    join_ratio: float = Field(default=1.0, description="Ratio of clients participating per round")
+    random_join_ratio: bool = Field(default=False, description="Randomize join ratio each round")
+    eval_gap: int = Field(default=1, description="Rounds between evaluations")
+    goal: str = Field(default="test", description="Experiment goal tag")
+    save_folder_name: str = Field(default="items", description="Folder for saved items")
+    auto_break: bool = Field(default=False, description="Auto-stop if accuracy plateaus")
+    top_cnt: int = Field(default=100, description="Top count threshold for auto_break")
+    times: int = Field(default=1, description="Number of repeated runs")
+    prev: int = Field(default=0, description="Previous running times (for resume)")
+    few_shot: int = Field(default=0, description="Few-shot setting (0=disabled)")
+
+    client_drop_rate: float = Field(default=0.0, description="Rate of clients that drop out after training")
+    train_slow_rate: float = Field(default=0.0, description="Rate of slow training clients")
+    send_slow_rate: float = Field(default=0.0, description="Rate of slow sending clients")
+    time_select: bool = Field(default=False, description="Select clients by time cost")
+    time_threshold: float = Field(default=10000, description="Time threshold for dropping slow clients")
+
+    dlg_eval: bool = Field(default=False, description="Enable DLG privacy evaluation")
+    dlg_gap: int = Field(default=100, description="Rounds between DLG evaluations")
+    batch_num_per_client: int = Field(default=2, description="Batches per client for DLG")
+
+    num_new_clients: int = Field(default=0, description="Number of new clients for generalization test")
+    fine_tuning_epoch_new: int = Field(default=0, description="Fine-tuning epochs for new clients")
+
+    feature_dim: int = Field(default=512, description="Feature dimension for text models")
+    vocab_size: int = Field(default=80, description="Vocabulary size (80=Shakespeare, 32000=AG_News/SogouNews)")
+    max_len: int = Field(default=200, description="Max sequence length for text models")
+
+    beta: float = Field(default=0.0, description="Beta for pFedMe/PerAvg/FedProx/FedAMP/FedPHP/GPFL/FedCAC")
+    lamda: float = Field(default=1.0, description="Lambda regularization weight")
+    mu: float = Field(default=0.0, description="Mu proximal term weight")
+    K: int = Field(default=5, description="Personalized training steps for pFedMe")
+    p_learning_rate: float = Field(default=0.01, description="Personalized learning rate for pFedMe")
+    M: int = Field(default=5, description="Server sends M models per client (FedFomo)")
+    itk: int = Field(default=4000, description="Iterations for FedMTL quadratic subproblems")
+    alphaK: float = Field(default=1.0, description="AlphaK for FedAMP")
+    sigma: float = Field(default=1.0, description="Sigma for FedAMP")
+    alpha: float = Field(default=1.0, description="Alpha for APFL/FedCross")
+    plocal_epochs: int = Field(default=1, description="Personalized local epochs (Ditto/FedRep)")
+    tau: float = Field(default=1.0, description="Temperature for MOON/FedCAC/FedLC")
+    fine_tuning_epochs: int = Field(default=10, description="Fine-tuning epochs for FedBABU")
+    dr_learning_rate: float = Field(default=0.0, description="Learning rate for APPLE")
+    L: float = Field(default=1.0, description="L parameter for APPLE")
+    noise_dim: int = Field(default=512, description="Noise dimension for FedGen generator")
+    generator_learning_rate: float = Field(default=0.005, description="Generator LR for FedGen")
+    hidden_dim: int = Field(default=512, description="Hidden dim for FedGen generator")
+    server_epochs: int = Field(default=1000, description="Server epochs for FedGen")
+    localize_feature_extractor: bool = Field(default=False, description="Localize feature extractor for FedGen")
+    server_learning_rate: float = Field(default=1.0, description="Server LR for SCAFFOLD/FedGH")
+    eta: float = Field(default=1.0, description="Eta for FedALA")
+    rand_percent: int = Field(default=80, description="Random percent for FedALA")
+    layer_idx: int = Field(default=2, description="Layer index for FedALA")
+    mentee_learning_rate: float = Field(default=0.005, description="Mentee LR for FedKD")
+    T_start: float = Field(default=0.95, description="Temperature start for FedKD")
+    T_end: float = Field(default=0.98, description="Temperature end for FedKD")
+    momentum: float = Field(default=0.1, description="Momentum for FedDBE")
+    kl_weight: float = Field(default=0.0, description="KL weight for FedDBE")
+    first_stage_bound: int = Field(default=0, description="First stage bound for FedCross")
+    fedcross_alpha: float = Field(default=0.99, description="Alpha for FedCross")
+    collaberative_model_select_strategy: int = Field(default=1, description="Model select strategy for FedCross")
+
+    data_dir: Path = Field(default=Path("data"), description="Directory for generated datasets")
+    results_dir: Path = Field(default=Path("results"), description="Directory for experiment results")
+    outputs_dir: Path = Field(default=Path("outputs"), description="Directory for model checkpoints")
+
+    model_config = {"extra": "allow", "arbitrary_types_allowed": True}
