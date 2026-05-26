@@ -1,27 +1,26 @@
-import logging
+import sys
 from pathlib import Path
 from typing import Optional
 
+from loguru import logger
 
-def get_logger(name: str = "pfllib") -> logging.Logger:
-    return logging.getLogger(name)
+_FMT = "[{time:YYYY-MM-DD HH:mm:ss}][{extra[name]}][{level}] {message}"
+
+logger.remove()
+logger.add(sys.stderr, format=_FMT, level="INFO")
+
+
+def get_logger(name: str = "pfllib"):
+    return logger.bind(name=name)
 
 
 def setup_logger(level: str = "INFO", log_file: Optional[Path] = None) -> None:
-    logger = logging.getLogger("pfllib")
-    logger.setLevel(getattr(logging, level.upper()))
+    import logging
 
-    formatter = logging.Formatter(
-        "[%(asctime)s][%(name)s][%(levelname)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    logging.getLogger("pfllib").setLevel(getattr(logging, level.upper(), logging.INFO))
 
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+    logger.remove()
+    logger.add(sys.stderr, format=_FMT, level=level.upper())
 
     if log_file:
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        logger.add(str(log_file), format=_FMT, level=level.upper())
