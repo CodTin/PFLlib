@@ -1,15 +1,42 @@
+# Data & results
 /results/
 /data/
 /outputs/
-/__pycache__/
-/**/__pycache__/
-/**/\.DS_Store
+
+# Python
+__pycache__/
 *.pyc
+*.pyo
 *.egg-info/
 dist/
 build/
 .eggs/
 *.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Type checkers & linters
 .mypy_cache/
 .ruff_cache/
+
+# Testing
 .pytest_cache/
+htmlcov/
+.coverage
+
+# Lock files (optional, uncomment if not tracking)
+# uv.lock
+
+# Ruff cache
+.ruff_cache/
